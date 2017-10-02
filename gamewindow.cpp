@@ -9,14 +9,15 @@
 #include <QList>
 #include <QDebug>
 #include <QTime>
-#include <QLabel>
 #include <QTimer>
+#include <QLabel>
 #include <QMessageBox>
 
-GameWindow::GameWindow(const QStringList *images,int size, QWidget *parent):
+GameWindow::GameWindow(QStringList *img,int size, QWidget *parent):
     QTabWidget(parent),
     ui(new Ui::GameWindow)
 {
+    images = img;
     //    qDebug() << QTime::currentTime().msec();
     srand(QTime::currentTime().msec());
     //	qDebug() << QTime(0, 0, 0).secsTo(QTime::currentTime());
@@ -31,7 +32,7 @@ GameWindow::GameWindow(const QStringList *images,int size, QWidget *parent):
     openedCell = 0;
     bt1 = 0;
     bt2 = 0;
-    time = 28;
+    time = 10;
 
 
     QGridLayout *gridLayout = new QGridLayout;
@@ -41,12 +42,19 @@ GameWindow::GameWindow(const QStringList *images,int size, QWidget *parent):
         QPushButton *button2 = new QPushButton();
         button1->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
         button2->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
+
         button1->setText(QString::number(i));
         button2->setText(QString::number(i));
-        connect(button1, SIGNAL(pressed()), signalMapper, SLOT(map())); // QSignalMapper map
-        connect(button2, SIGNAL(pressed()), signalMapper, SLOT(map())); // QSignalMapper map
-        signalMapper->setMapping(button1, i);
-        signalMapper->setMapping(button2, i);
+        //        button1->setProperty("image",QString("url(%1)").arg(images->at(0)));
+        //        button2->setProperty("image",QString("url(%1)").arg(images->at(0)));
+        connect(button1, SIGNAL(clicked()), signalMapper, SLOT(map())); // QSignalMapper map
+        connect(button2, SIGNAL(clicked()), signalMapper, SLOT(map())); // QSignalMapper map
+        //        signalMapper->setMapping(button1, i);
+        //        signalMapper->setMapping(button2, i);
+        map.insert(button1, i+1);
+        map.insert(button2, i+1);
+        signalMapper->setMapping(button1, button1);
+        signalMapper->setMapping(button2, button2);
         buttonlist->append(button1);
         buttonlist->append(button2);
     }
@@ -63,7 +71,8 @@ GameWindow::GameWindow(const QStringList *images,int size, QWidget *parent):
     for(int i = 0; i < buttonlist->size(); i++)
         gridLayout->addWidget(buttonlist->at(i), (i / 3)+1, i % 3);//3x3lük
 
-    connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(clicked(int)));
+    //connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(clicked(int)));
+    connect(signalMapper, SIGNAL(mapped(QWidget*)), this, SLOT(clicked(QWidget*)));
 
     timer = new QTimer;
     connect(timer,SIGNAL(timeout()),this,SLOT(timeDown()));
@@ -72,9 +81,48 @@ GameWindow::GameWindow(const QStringList *images,int size, QWidget *parent):
 
 }
 
+void GameWindow::clicked(QWidget *wid)
+{
+    openedCell++;
+    qDebug()<<QString::number(openedCell);
+    if(openedCell%2){ //tek
+        if(bt1 && bt2) {
+            //close both button
+            bt1->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
+            bt2->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
+            bt1 = 0;
+            bt2 = 0;
+        }
+        bt1 = (QPushButton *)wid;
+        bt1->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(map[bt1])));
+//        qDebug()<<QString("Teki açıldı") << bt1;
+    }
+    else { //çift
+
+        qDebug()<<QString("ikinci buton açıldı kontrol edildi");
+        bt2 = (QPushButton *)wid;
+        bt2->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(map[bt2])));
+        if(map[bt1] !=  map[bt2]){
+            openedCell -= 2;
+        }else{
+            bt1 = 0;
+            bt2 = 0;
+        }
+    }
+    if(openedCell==cellCount)
+    {
+        timer->stop();//Eğer süre bittiyse bunu kontrol etmeyecek
+        delete timer;
+        QMessageBox::information(this,"Tebrikler","Kazandınız.");
+    }
+
+
+}
+
+#if 0
 void GameWindow::clicked(int value)
 {
-//    qDebug()<<QString::number(value);
+    //    qDebug()<<QString::number(value);
     openedCell++;
     qDebug()<<QString::number(openedCell);
 
@@ -83,20 +131,29 @@ void GameWindow::clicked(int value)
         {
             //close both button
             qDebug()<<QString("ikisi de kapandı");
+            bt1->setText(QString("(-)"));
+            bt2->setText(QString("(-)"));
             bt1 = 0;
             bt2 = 0;
         }
         bt1 = (QPushButton*)sender();
         prev_value = value;
-        qDebug()<<QString("Teki açıldı");
+        qDebug()<<QString("Teki açıldı") << bt1;
     }
     else { //çift
 
         qDebug()<<QString("ikinci buton açıldı kontrol edildi");
         bt2 = (QPushButton*)sender();
+        qDebug()<<bt1;
+        qDebug()<<bt2;
         if(prev_value != value){
             //eğer iki değer eşit değilse açılan sayısını 2 azalt
             openedCell -= 2;
+            //            bt1->setText(QString::number(value)+QString("(-)"));
+            bt1->setText(QString("(-)"));
+            //            bt2->setText(QString::number(value)+QString("(-)"));
+            bt2->setText(QString("(-)"));
+
 
         }else{
             bt1->setText(QString("(+)"));
@@ -114,6 +171,7 @@ void GameWindow::clicked(int value)
 
 
 }
+#endif
 
 void GameWindow::timeDown()
 {

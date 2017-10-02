@@ -1,6 +1,7 @@
 #ifndef GAMEWINDOW_H
 #define GAMEWINDOW_H
 
+#include <QMap>
 #include <QTabWidget>
 #include <QSignalMapper>
 #include <QLabel>
@@ -17,14 +18,16 @@ class GameWindow : public QTabWidget
 	Q_OBJECT
 
 public:
-	explicit GameWindow(const QStringList *images,int size, QWidget *parent = 0);
+    explicit GameWindow(QStringList *images,int size, QWidget *parent = 0);
 	~GameWindow();
 public slots:
-	void clicked(int value);
+    void clicked(QWidget*wid);
 	void timeDown();
 private:
 	Ui::GameWindow *ui;
+    QStringList *images;
 	QSignalMapper *signalMapper;
+    QMap <QPushButton *, int> map;
 	QLabel *label;
 	QTimer *timer;
 	QPushButton *bt1;
@@ -32,7 +35,6 @@ private:
 	int cellCount;
 	int time;
 	int openedCell;
-    int prev_value; // previous value
 };
 
 #endif // GAMEWINDOW_H

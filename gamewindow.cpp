@@ -1,5 +1,6 @@
 #include "gamewindow.h"
 #include "matchinggame.h"
+#include "tictocgame.h"
 #include "ui_gamewindow.h"
 #include <stdlib.h>
 #include <time.h>
@@ -18,7 +19,7 @@ GameWindow::GameWindow(QWidget *parent):
 	QTabWidget(parent),
 	ui(new Ui::GameWindow)
 {
-
+//	ui->setupUi(this);
 	QStringList *images = new QStringList();
 	images->append("game-assets/default.png");
 	images->append("game-assets/1337491 - game go open play pokeba.png");
@@ -34,8 +35,10 @@ GameWindow::GameWindow(QWidget *parent):
 
 	MatchingGame *mg = new MatchingGame(this);
 	mg->setGeometry(0,0,600,480);
-	this->setGeometry(0,0,600,480);
 	mg->start(images,8);
+//	TicTocGame *ttg = new TicTocGame(this);
+
+	this->setGeometry(0,0,600,480);
 
 }
 

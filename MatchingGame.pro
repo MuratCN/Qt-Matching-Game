@@ -14,11 +14,14 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     gamewindow.cpp \
-    matchinggame.cpp
+    matchinggame.cpp \
+    tictocgame.cpp
 
 HEADERS  += \
     gamewindow.h \
-    matchinggame.h
+    matchinggame.h \
+    tictocgame.h
 
 FORMS    += \
-    gamewindow.ui
+    gamewindow.ui \
+    tictocgame.ui

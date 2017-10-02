@@ -67,8 +67,18 @@ void MatchingGame::start(QStringList *img,int size)
 		buttonlist->replace(i, tmp);
 	}
 	label->setText("Time:"+QString::number(time));
-	label->setGeometry(0,0,200,10);
+
+	//	label->setFixedSize(50,5);
+	//	label->setGeometry(0,0,200,10);
+	label->setStyleSheet(QString("background-color: red; color: white;"));
+	label->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+
 	gridLayout->addWidget(label,0,0,1,3);
+	QLayoutItem *row = gridLayout->itemAt(0);
+	QRect rect(0,0,100,10);
+	rect.setRect(0,0,100,10);
+	row->setGeometry(rect);
+
 	for(int i = 0; i < buttonlist->size(); i++)
 		gridLayout->addWidget(buttonlist->at(i), (i / 3)+1, i % 3);//3x3lük
 
@@ -94,12 +104,13 @@ void MatchingGame::clicked(QWidget *wid)
 	openedCell++;
 	qDebug()<<QString::number(openedCell);
 	if(openedCell%2){ //tek
-//		if(bt1 && bt2) {
-//			bt1->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
-//			bt2->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
-//			bt1 = 0;
-//			bt2 = 0;
-//		}
+		if(bt1 && bt2) {
+			bt1->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
+			bt2->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
+			bt1 = 0;
+			bt2 = 0;
+			timer2->stop();
+		}
 		bt1 = button;
 		bt1->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(map[bt1])));
 	}
@@ -111,6 +122,10 @@ void MatchingGame::clicked(QWidget *wid)
 			timer2->start(500);
 
 		}else{
+			signalMapper->removeMappings(bt1);
+			signalMapper->removeMappings(bt2);
+//			QObject::disconnect(bt1,SIGNAL(clicked()),this,SLOT(clicked(QWidget*)));
+//			QObject::disconnect(bt2,SIGNAL(clicked()),this,SLOT(clicked(QWidget*)));
 			bt1 = 0;
 			bt2 = 0;
 		}
@@ -152,6 +167,8 @@ void MatchingGame::closeCells(){
 	timer2->stop();
 	bt1->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
 	bt2->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
+	bt1 = 0;
+	bt2 = 0;
 }
 
 

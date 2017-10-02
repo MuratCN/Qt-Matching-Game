@@ -34,7 +34,6 @@ void MatchingGame::start(QStringList *img,int size)
 	bt2 = 0;
 	time = 18;
 
-
 	QGridLayout *gridLayout = new QGridLayout;
 	QList<QPushButton*> *buttonlist = new QList<QPushButton*>() ;
 	for (int i = 0, n = cellCount/2; i < n; i++) {
@@ -43,10 +42,6 @@ void MatchingGame::start(QStringList *img,int size)
 		button1->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
 		button2->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
 		//        button1->setProperty("image",QString("url(%1)").arg(images->at(0)));
-
-		//        button1->setText(QString::number(i));
-		//        button2->setText(QString::number(i));
-
 
 		connect(button1, SIGNAL(clicked()), signalMapper, SLOT(map())); // QSignalMapper map
 		connect(button2, SIGNAL(clicked()), signalMapper, SLOT(map())); // QSignalMapper map
@@ -66,12 +61,12 @@ void MatchingGame::start(QStringList *img,int size)
 		buttonlist->replace(selected, buttonlist->at(i));
 		buttonlist->replace(i, tmp);
 	}
-	label->setText("Time:"+QString::number(time));
 
-	//	label->setFixedSize(50,5);
-	//	label->setGeometry(0,0,200,10);
+	label->setText("Time:"+QString::number(time));
 	label->setStyleSheet(QString("background-color: red; color: white;"));
 	label->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+	//	label->setFixedSize(50,5);
+	//	label->setGeometry(0,0,200,10);
 
 	gridLayout->addWidget(label,0,0,1,3);
 	QLayoutItem *row = gridLayout->itemAt(0);
@@ -121,7 +116,7 @@ void MatchingGame::clicked(QWidget *wid)
 			openedCell -= 2;
 			timer2->start(500);
 
-		}else{
+		} else {
 			signalMapper->removeMappings(bt1);
 			signalMapper->removeMappings(bt2);
 //			QObject::disconnect(bt1,SIGNAL(clicked()),this,SLOT(clicked(QWidget*)));
@@ -130,28 +125,21 @@ void MatchingGame::clicked(QWidget *wid)
 			bt2 = 0;
 		}
 	}
-	if(openedCell==cellCount)
-	{
+	if(openedCell == cellCount) {
 		timer->stop();
 		delete timer;
 		QMessageBox::information(this,"Tebrikler","Kazandınız.");
 		this->setEnabled(false);
 		// TODO süre bittiğinde kontrol ettirme
 	}
-
-
 }
-
 
 void MatchingGame::timeDown()
 {
-	if(time>0)
-	{
+	if(time > 0) {
 		label->setText(QString("Time:")+QString::number(time));
 		time--;
-	}
-	else
-	{
+	} else {
 		timer->stop();
 		delete timer;
 		label->setText(QString("Time:")+QString::number(0));
@@ -163,14 +151,14 @@ void MatchingGame::timeDown()
 
 }
 
-void MatchingGame::closeCells(){
+void MatchingGame::closeCells()
+{
 	timer2->stop();
 	bt1->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
 	bt2->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
 	bt1 = 0;
 	bt2 = 0;
 }
-
 
 MatchingGame::~MatchingGame()
 {

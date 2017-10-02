@@ -23,12 +23,14 @@ public slots:
 	void start(QStringList *img,int size);
 	void clicked(QWidget*wid);
 	void timeDown();
+	void closeCells();
 private:
 	QStringList *images;
 	QSignalMapper *signalMapper;
 	QMap <QPushButton *, int> map;
 	QLabel *label;
 	QTimer *timer;
+	QTimer *timer2;
 	QPushButton *bt1;
 	QPushButton *bt2;
 	int cellCount;

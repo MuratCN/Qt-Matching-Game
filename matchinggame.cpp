@@ -32,7 +32,7 @@ void MatchingGame::start(QStringList *img,int size)
 	openedCell = 0;
 	bt1 = 0;
 	bt2 = 0;
-	time = 10;
+	time = 18;
 
 
 	QGridLayout *gridLayout = new QGridLayout;
@@ -67,6 +67,7 @@ void MatchingGame::start(QStringList *img,int size)
 		buttonlist->replace(i, tmp);
 	}
 	label->setText("Time:"+QString::number(time));
+	label->setGeometry(0,0,200,10);
 	gridLayout->addWidget(label,0,0,1,3);
 	for(int i = 0; i < buttonlist->size(); i++)
 		gridLayout->addWidget(buttonlist->at(i), (i / 3)+1, i % 3);//3x3lük
@@ -76,30 +77,39 @@ void MatchingGame::start(QStringList *img,int size)
 	timer = new QTimer;
 	connect(timer,SIGNAL(timeout()),this,SLOT(timeDown()));
 	timer->start(1000);
-	setLayout(gridLayout);
 
+	timer2 = new QTimer();
+	connect(timer2,SIGNAL(timeout()),this,SLOT(closeCells()));
+
+	setLayout(gridLayout);
 }
 
 
 void MatchingGame::clicked(QWidget *wid)
 {
+	QPushButton *button = (QPushButton *)wid;
+	if(bt1 == button && !bt2) {
+		return;
+	}
 	openedCell++;
 	qDebug()<<QString::number(openedCell);
 	if(openedCell%2){ //tek
-		if(bt1 && bt2) {
-			bt1->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
-			bt2->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
-			bt1 = 0;
-			bt2 = 0;
-		}
-		bt1 = (QPushButton *)wid;
+//		if(bt1 && bt2) {
+//			bt1->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
+//			bt2->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
+//			bt1 = 0;
+//			bt2 = 0;
+//		}
+		bt1 = button;
 		bt1->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(map[bt1])));
 	}
 	else {
-		bt2 = (QPushButton *)wid;
+		bt2 = button;
 		bt2->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(map[bt2])));
 		if(map[bt1] !=  map[bt2]){
 			openedCell -= 2;
+			timer2->start(500);
+
 		}else{
 			bt1 = 0;
 			bt2 = 0;
@@ -110,6 +120,7 @@ void MatchingGame::clicked(QWidget *wid)
 		timer->stop();
 		delete timer;
 		QMessageBox::information(this,"Tebrikler","Kazandınız.");
+		this->setEnabled(false);
 		// TODO süre bittiğinde kontrol ettirme
 	}
 
@@ -130,9 +141,17 @@ void MatchingGame::timeDown()
 		delete timer;
 		label->setText(QString("Time:")+QString::number(0));
 		QMessageBox::information(this,"Oyun Sonu","Süre doldu!");
+		//TODO pasif yap
+		this->setEnabled(false);
 	}
 
 
+}
+
+void MatchingGame::closeCells(){
+	timer2->stop();
+	bt1->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
+	bt2->setStyleSheet(QString("border-image: url(%1);height: 100;width:100").arg(images->at(0)));
 }
 
 

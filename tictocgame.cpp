@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QDebug>
 
+
 TicTocGame::TicTocGame(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::TicTocGame)

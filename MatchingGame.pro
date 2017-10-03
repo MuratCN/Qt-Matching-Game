@@ -25,3 +25,6 @@ HEADERS  += \
 FORMS    += \
     gamewindow.ui \
     tictocgame.ui
+
+RESOURCES += \
+    assets.qrc
